@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+
+.env
+
+.ipynb_checkpoints/
+
+data/raw/*
+data/processed/*
+
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+.jupyter_runtime/
+
+repositories/
