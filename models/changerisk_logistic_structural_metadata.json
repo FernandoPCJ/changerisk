@@ -1,0 +1,57 @@
+{
+  "project": "ChangeRisk",
+  "repository": "pandas-dev/pandas",
+  "dataset": "structural",
+  "model": "LogisticRegression",
+  "scaler": "RobustScaler",
+  "class_weight": "balanced",
+  "random_state": 42,
+  "feature_count": 21,
+  "features": [
+    "commits",
+    "changed_files",
+    "additions",
+    "deletions",
+    "pr_duration_hours",
+    "production_files_changed",
+    "test_files_changed",
+    "documentation_files_changed",
+    "other_files_changed",
+    "added_files",
+    "modified_files",
+    "deleted_files",
+    "renamed_files",
+    "churn_per_file",
+    "additions_per_file",
+    "deletions_per_file",
+    "commits_per_file",
+    "production_file_ratio",
+    "test_file_ratio",
+    "test_to_production_ratio",
+    "addition_ratio"
+  ],
+  "train_years": [
+    2022,
+    2023
+  ],
+  "validation_year": 2023,
+  "out_of_time_test_years": [
+    2024,
+    2025
+  ],
+  "training_rows": 4517,
+  "training_positives": 110,
+  "training_negatives": 4407,
+  "operational_threshold": 0.69,
+  "threshold_note": "Threshold selected on 2023 validation data. It did not generalize as a fixed binary threshold to the 2024-2025 out-of-time stress test. The model should preferably be interpreted as a risk-ranking model rather than a calibrated probability classifier.",
+  "score_reference": {
+    "min": 3.6135021139733564e-10,
+    "p25": 0.3733441044833246,
+    "median": 0.4578657460233286,
+    "p75": 0.5071514207548475,
+    "p90": 0.582805259214731,
+    "p95": 0.6774449423429816,
+    "p99": 0.904101623986759,
+    "max": 0.999999999999998
+  }
+}
