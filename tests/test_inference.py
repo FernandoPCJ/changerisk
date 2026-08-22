@@ -1,23 +1,9 @@
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from src.inference import ChangeRiskPredictor
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
-ROOT = Path(__file__).resolve().parents[1]
-
-DATA_FILE = (
-    ROOT
-    / "data"
-    / "processed"
-    / "pandas_ml_structural.csv"
-)
 
 
 # ============================================================
@@ -31,26 +17,41 @@ def predictor():
 
 
 @pytest.fixture(scope="module")
-def dataset():
-
-    return pd.read_csv(
-        DATA_FILE
-    )
-
-
-@pytest.fixture(scope="module")
 def valid_sample(
     predictor,
-    dataset,
 ):
 
-    return (
-        dataset[
-            predictor.features
-        ]
-        .head(1)
-        .copy()
+    sample = {
+        "commits": 7.0,
+        "changed_files": 28.0,
+        "additions": 8307.0,
+        "deletions": 8354.0,
+        "pr_duration_hours": 888.3330555555556,
+        "production_files_changed": 26.0,
+        "test_files_changed": 0.0,
+        "documentation_files_changed": 1.0,
+        "other_files_changed": 1.0,
+        "added_files": 0.0,
+        "modified_files": 28.0,
+        "deleted_files": 0.0,
+        "renamed_files": 0.0,
+        "churn_per_file": 595.0357142857143,
+        "additions_per_file": 296.67857142857144,
+        "deletions_per_file": 298.35714285714283,
+        "commits_per_file": 0.25,
+        "production_file_ratio": 0.9285714285714286,
+        "test_file_ratio": 0.0,
+        "test_to_production_ratio": 0.0,
+        "addition_ratio": 0.4985895204369485,
+    }
+
+    dataframe = pd.DataFrame(
+        [sample]
     )
+
+    return dataframe[
+        predictor.features
+    ].copy()
 
 
 # ============================================================
@@ -214,15 +215,15 @@ def test_operational_flag_matches_threshold(
 
 def test_batch_prediction(
     predictor,
-    dataset,
+    valid_sample,
 ):
 
-    sample = (
-        dataset[
-            predictor.features
-        ]
-        .head(10)
-        .copy()
+    sample = pd.concat(
+        [
+            valid_sample
+            for _ in range(10)
+        ],
+        ignore_index=True,
     )
 
     result = predictor.predict(
