@@ -1,0 +1,1 @@
+[![ChangeRisk CI](https://github.com/FernandoPCJ/changerisk/actions/workflows/ci.yml/badge.svg)](https://github.com/FernandoPCJ/changerisk/actions/workflows/ci.yml)
