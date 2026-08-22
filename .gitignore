@@ -15,3 +15,9 @@ data/processed/*
 .jupyter_runtime/
 
 repositories/
+
+# MLflow
+mlruns/
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
