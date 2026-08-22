@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.inference import ChangeRiskPredictor
 
@@ -52,45 +52,140 @@ app = FastAPI(
 class PredictionRequest(BaseModel):
 
     model_config = ConfigDict(
-        extra="allow"
+        extra="forbid"
     )
 
-    commits: float
-    changed_files: float
-    additions: float
-    deletions: float
-    pr_duration_hours: float
+    commits: float = Field(ge=0)
+    changed_files: float = Field(ge=0)
 
-    production_files_changed: float
-    test_files_changed: float
-    documentation_files_changed: float
-    other_files_changed: float
+    additions: float = Field(ge=0)
+    deletions: float = Field(ge=0)
 
-    added_files: float
-    modified_files: float
-    deleted_files: float
-    renamed_files: float
+    pr_duration_hours: float = Field(ge=0)
 
-    churn_per_file: float
-    additions_per_file: float
-    deletions_per_file: float
-    commits_per_file: float
+    production_files_changed: float = Field(ge=0)
+    test_files_changed: float = Field(ge=0)
+    documentation_files_changed: float = Field(ge=0)
+    other_files_changed: float = Field(ge=0)
 
-    production_file_ratio: float
-    test_file_ratio: float
-    test_to_production_ratio: float
-    addition_ratio: float
+    added_files: float = Field(ge=0)
+    modified_files: float = Field(ge=0)
+    deleted_files: float = Field(ge=0)
+    renamed_files: float = Field(ge=0)
+
+    churn_per_file: float = Field(ge=0)
+    additions_per_file: float = Field(ge=0)
+    deletions_per_file: float = Field(ge=0)
+    commits_per_file: float = Field(ge=0)
+
+    production_file_ratio: float = Field(
+        ge=0,
+        le=1,
+    )
+
+    test_file_ratio: float = Field(
+        ge=0,
+        le=1,
+    )
+
+    test_to_production_ratio: float = Field(
+        ge=0
+    )
+
+    addition_ratio: float = Field(
+        ge=0,
+        le=1,
+    )
+
+
+# ============================================================
+# RESPONSE MODELS
+# ============================================================
+
+class HealthResponse(BaseModel):
+
+    status: Literal["ok"]
+
+    model_loaded: bool
+
+
+class ModelInfoResponse(BaseModel):
+
+    project: str
+
+    repository: str
+
+    model: str
+
+    dataset: str
+
+    feature_count: int
+
+    train_years: list[int]
+
+    operational_threshold: float
+
+    interpretation: Literal[
+        "relative_risk_score"
+    ]
+
+    warning: str
+
+
+class FeaturesResponse(BaseModel):
+
+    feature_count: int
+
+    features: list[str]
+
+
+class PredictionResult(BaseModel):
+
+    risk_score: float
+
+    risk_level: Literal[
+        "normal",
+        "elevated",
+        "high",
+        "very_high",
+    ]
+
+    operational_flag: bool
+
+    operational_threshold: float
+
+    interpretation: Literal[
+        "relative_risk_score"
+    ]
+
+
+class PredictionResponse(BaseModel):
+
+    prediction: PredictionResult
+
+
+class RootResponse(BaseModel):
+
+    service: str
+
+    status: Literal["online"]
+
+    docs: str
 
 
 # ============================================================
 # HEALTH
 # ============================================================
 
-@app.get("/health")
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+)
 def health():
 
     return {
         "status": "ok",
+
         "model_loaded": (
             predictor is not None
         ),
@@ -101,7 +196,10 @@ def health():
 # MODEL INFO
 # ============================================================
 
-@app.get("/model")
+@app.get(
+    "/model",
+    response_model=ModelInfoResponse,
+)
 def model_info():
 
     if predictor is None:
@@ -159,7 +257,10 @@ def model_info():
 # FEATURES
 # ============================================================
 
-@app.get("/features")
+@app.get(
+    "/features",
+    response_model=FeaturesResponse,
+)
 def features():
 
     if predictor is None:
@@ -183,7 +284,10 @@ def features():
 # PREDICT
 # ============================================================
 
-@app.post("/predict")
+@app.post(
+    "/predict",
+    response_model=PredictionResponse,
+)
 def predict(
     request: PredictionRequest,
 ):
@@ -238,11 +342,16 @@ def predict(
 # ROOT
 # ============================================================
 
-@app.get("/")
+@app.get(
+    "/",
+    response_model=RootResponse,
+)
 def root():
 
     return {
         "service": "ChangeRisk API",
+
         "status": "online",
+
         "docs": "/docs",
     }
