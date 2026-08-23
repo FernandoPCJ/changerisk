@@ -89,3 +89,9 @@ The target variable is:
 
 ```text
 observed_defect_90d
+
+## Architecture
+
+The ChangeRisk architecture covers the complete lifecycle from Pull Request data collection and SZZ-based target construction to model inference and production deployment.
+
+![ChangeRisk Architecture and Delivery Flow](docs/images/changerisk-architecture-delivery-flow.png)
