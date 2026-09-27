@@ -95,3 +95,18 @@ observed_defect_90d
 The ChangeRisk architecture covers the complete lifecycle from Pull Request data collection and SZZ-based target construction to model inference and production deployment.
 
 ![ChangeRisk Architecture and Delivery Flow](docs/images/changerisk-architecture-delivery-flow.png)
+
+---
+
+## Experimental: Multi-Agent Code Audit
+
+`src/audit_agents/` is a small, separate experiment: three cooperating LLM agents — **Critic**, **Architect**, and **Tech Lead (Arbiter)** — built with [CrewAI](https://www.crewai.com/), that review a source file the way a human code-review discussion works: one role finds problems, one provides design context, and the third produces a final, prioritized verdict.
+
+It was applied to two core files of this project (`src/inference.py` and `src/run_szz.py`); the resulting report is in [`reports/code_audit_report.md`](reports/code_audit_report.md).
+
+Runs against a local Ollama model by default (same setup used for the LLM comparisons in my TCC), configurable via `.env`:
+
+```bash
+pip install -r requirements-agents.txt
+python -m src.audit_agents.run_audit src/inference.py
+```
